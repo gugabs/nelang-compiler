@@ -1,6 +1,10 @@
 package main;
 
+import java.lang.Character;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -34,6 +38,8 @@ public class Compiler {
 
     keywordsTable.put("var", Symbol.VAR);
     keywordsTable.put("int", Symbol.INT);
+    keywordsTable.put("string", Symbol.STRING);
+    keywordsTable.put("boolean", Symbol.BOOLEAN);
     keywordsTable.put("if", Symbol.IF);
     keywordsTable.put("else", Symbol.ELSE);
     keywordsTable.put("not", Symbol.NOT);
@@ -45,6 +51,8 @@ public class Compiler {
     keywordsTable.put("print", Symbol.PRINT);
     keywordsTable.put("println", Symbol.PRINTLN);
   }
+
+  static private Map<String, Symbol> varTypesTable = new HashMap<>();
 
   private int numberValue;
   private String variableName;
@@ -90,8 +98,10 @@ public class Compiler {
 
     this.nextToken();
 
-    if (this.token != Symbol.INT)
-      throw new RuntimeException("Error: expected 'int'");
+    if (this.token != Symbol.INT && this.token != Symbol.STRING && this.token != Symbol.BOOLEAN)
+      throw new RuntimeException("Error: expected a type");
+
+    Symbol type = this.token;
 
     this.nextToken();
 
@@ -106,7 +116,9 @@ public class Compiler {
       throw new RuntimeException("Error: expected ';'");
 
     this.nextToken();
-    
+
+    varTypesTable.put(id.getName(), type);
+
     return id;
   }
 
@@ -120,7 +132,7 @@ public class Compiler {
       return;
     }
 
-    char currCharacter = this.input[this.tokenPos];
+    char currCharacter = Character.toLowerCase(this.input[this.tokenPos]);
 
     if (Character.isLetter(currCharacter)) {
       this.getWord();
@@ -315,6 +327,8 @@ public class Compiler {
 
     Ident id = new Ident(variableName);
 
+    Symbol type = varTypesTable.get(id.getName());
+
     this.nextToken();
     if (this.token != Symbol.ASSIGN)
       throw new RuntimeException("Error: expected '='.");
@@ -322,6 +336,11 @@ public class Compiler {
     this.nextToken();
 
     Expr e = this.expr();
+
+    String javaType = ((Object) e).getClass().getSimpleName();
+
+    if (type.toString() != javaType.toString()) // Pesquisar sobre obtenção de tipos
+      throw new RuntimeException("Error: expected same type");
 
     if (this.token != Symbol.SEMICOLON)
       throw new RuntimeException("Error: expected ';'.");
@@ -342,7 +361,7 @@ public class Compiler {
       StatList listElse = this.statList();
       return new IfStat(e, sl, listElse);
     }
-    
+
     return new IfStat(e, sl);
   }
 
@@ -376,132 +395,132 @@ public class Compiler {
 
   private WhileStat whileStat() {
     this.nextToken();
-    
+
     Expr e = this.expr();
     StatList sl = this.statList();
-    
+
     return new WhileStat(e, sl);
   }
 
   private PrintStat printStat() {
     this.nextToken();
-    
+
     Expr e = this.expr();
-    
+
     if (this.token != Symbol.SEMICOLON)
       throw new RuntimeException("Error: expected ';'.");
-    
+
     this.nextToken();
-    
+
     return new PrintStat(e);
   }
 
   private PrintLnStat printlnStat() {
     this.nextToken();
-    
+
     Expr e = this.expr();
-    
+
     if (this.token != Symbol.SEMICOLON)
       throw new RuntimeException("Error: expected ';'.");
-    
+
     this.nextToken();
-    
+
     return new PrintLnStat(e);
   }
 
   private Expr expr() {
     Expr left = this.andExpr();
-    
+
     List<Symbol> opList = new ArrayList<Symbol>();
     List<Expr> rightList = new ArrayList<Expr>();
-    
+
     if (this.token == Symbol.OR) {
       opList.add(this.token);
       this.nextToken();
       rightList.add(this.andExpr());
-      
+
       left = new CompositeExpr(left, opList, rightList);
     }
-    
+
     return left;
   }
 
   private Expr andExpr() {
     Expr left = this.relExpr();
-    
+
     List<Symbol> opList = new ArrayList<Symbol>();
     List<Expr> rightList = new ArrayList<Expr>();
-    
+
     if (this.token == Symbol.AND) {
       opList.add(this.token);
       this.nextToken();
       rightList.add(this.relExpr());
-      
+
       left = new CompositeExpr(left, opList, rightList);
     }
-    
+
     return left;
   }
 
   private Expr relExpr() {
     Expr left = this.addExpr();
-    
+
     List<Symbol> opList = new ArrayList<Symbol>();
     List<Expr> rightList = new ArrayList<Expr>();
-    
+
     if (this.token == Symbol.GREATER || this.token == Symbol.GREATER_E || this.token == Symbol.LESS
         || this.token == Symbol.LESS_E || this.token == Symbol.EQUAL || this.token == Symbol.DIFF) {
       opList.add(this.token);
       this.nextToken();
       rightList.add(this.addExpr());
-      
+
       left = new CompositeExpr(left, opList, rightList);
     }
-    
+
     return left;
   }
 
   private Expr addExpr() {
     Expr left = this.multExpr();
-    
+
     List<Symbol> opList = new ArrayList<Symbol>();
     List<Expr> rightList = new ArrayList<Expr>();
-    
+
     if (this.token == Symbol.PLUS || this.token == Symbol.MINUS) {
       while (this.token == Symbol.PLUS || this.token == Symbol.MINUS) {
         opList.add(this.token);
         this.nextToken();
         rightList.add(this.multExpr());
       }
-      
+
       left = new CompositeExpr(left, opList, rightList);
     }
-    
+
     return left;
   }
 
   private Expr multExpr() {
     Expr left = this.simpleExpr();
-    
+
     List<Symbol> opList = new ArrayList<Symbol>();
     List<Expr> rightList = new ArrayList<Expr>();
-    
+
     if (this.token == Symbol.MULT || this.token == Symbol.DIV || this.token == Symbol.MOD) {
       while (this.token == Symbol.MULT || this.token == Symbol.DIV || this.token == Symbol.MOD) {
         opList.add(this.token);
         this.nextToken();
         rightList.add(this.simpleExpr());
       }
-      
+
       left = new CompositeExpr(left, opList, rightList);
     }
-    
+
     return left;
   }
 
   private Expr simpleExpr() {
     Expr e = null;
-    
+
     if (this.token == Symbol.NUMBER) {
       e = new Numero(numberValue);
       this.nextToken();
@@ -511,21 +530,21 @@ public class Compiler {
     } else if (this.token == Symbol.MINUS || this.token == Symbol.NOT || this.token == Symbol.PLUS) {
       Symbol op = this.token;
       this.nextToken();
-      
+
       e = new UnaryExpr(simpleExpr(), op);
     } else if (this.token == Symbol.LEFT_P) {
       this.nextToken();
-      
+
       e = expr();
-      
+
       if (this.token != Symbol.RIGHT_P)
         throw new RuntimeException("Error: expected ')'.");
-      
+
       this.nextToken();
     } else {
       throw new RuntimeException("Error: expected a simpleExpr.");
     }
-    
+
     return e;
   }
 

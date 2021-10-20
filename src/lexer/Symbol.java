@@ -24,6 +24,8 @@ public enum Symbol {
 	  RIGHT_B("}"),
 	  VAR("var"),
 	  INT("int"),
+	  STRING("string"),
+	  BOOLEAN("boolean"),
 	  IF("if"),
 	  ELSE("else"),
 	  NOT("!"),
