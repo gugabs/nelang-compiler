@@ -38,7 +38,7 @@ public class IfStat extends Stat {
     if (statElse == null) {
       System.out.println("}");
     } else {
-      System.out.print("} else {");
+      System.out.println("} else {");
       statElse.genC();
       System.out.println("}");
     }
