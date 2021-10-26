@@ -18,21 +18,21 @@ public class ForStat extends Stat {
   }
 
   @Override
-  public void eval(Map<String, Integer> memory) {
+  public void eval(Map<String, Object> memory) {
 
     String identName = id.getName();
 
-    int leftVal = left.eval(memory);
+    int leftVal = (int)left.eval(memory);
 
     memory.put(identName, leftVal);
 
-    if (left.eval(memory) > right.eval(memory))
+    if ((int)left.eval(memory) > (int)right.eval(memory))
       throw new RuntimeException(
           "Error: the expression to the left should be less than or equal to the right expression");
 
-    while (memory.get(identName) <= right.eval(memory)) {
+    while ((int)memory.get(identName) <= (int)right.eval(memory)) {
       statList.eval(memory);
-      int next = memory.get(identName) + 1;
+      int next = (int)memory.get(identName) + 1;
       memory.put(identName, next);
     }
 

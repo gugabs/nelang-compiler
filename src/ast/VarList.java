@@ -1,29 +1,23 @@
 package ast;
 
-import java.util.List;
 import java.util.Map;
 
-public class VarList {
+public class VarList extends Stat {
 
-  private List<Ident> id;
+  private Ident id;
 
-  public VarList(List<Ident> id) {
-    super();
+  public VarList(Ident id) {
     this.id = id;
   }
 
-  public void eval(Map<String, Integer> memory) {
-    id.forEach(identifier -> {
-      if (memory.containsKey(identifier.getName()))
-        throw new RuntimeException("Error: duplicated identifier.");
-    });
+  public void eval(Map<String, Object> memory) {
+    if (memory.containsKey(id.getName()))
+      throw new RuntimeException("Error: duplicated identifier.");
   }
 
   public void genC() {
-    id.forEach(item -> {
-      System.out.print("int ");
-      item.genC();
-      System.out.println(";");
-    });
+    System.out.print(id.getType().getName() + ' ');
+    id.genC();
+    System.out.println(';');
   }
 }

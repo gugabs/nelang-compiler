@@ -24,8 +24,8 @@ public class CompositeExpr extends Expr {
   }
 
   @Override
-  public int eval(Map<String, Integer> memory) {
-    int leftResult = left.eval(memory);
+  public Object eval(Map<String, Object> memory) {
+    Object leftResult = left.eval(memory);
 
     if (op != null) {
       Iterator<Symbol> opIterator = op.iterator();
@@ -36,31 +36,87 @@ public class CompositeExpr extends Expr {
         Expr currExpr = exprIterator.next();
 
         if (currOp == Symbol.PLUS) {
-          leftResult = leftResult + currExpr.eval(memory);
+          leftResult = (int) leftResult + (int) currExpr.eval(memory);
         } else if (currOp == Symbol.MINUS) {
-          leftResult = leftResult - currExpr.eval(memory);
+          leftResult = (int) leftResult - (int) currExpr.eval(memory);
         } else if (currOp == Symbol.MULT) {
-          leftResult = leftResult * currExpr.eval(memory);
+          leftResult = (int) leftResult * (int) currExpr.eval(memory);
         } else if (currOp == Symbol.DIV) {
-          leftResult = leftResult / currExpr.eval(memory);
+          leftResult = (int) leftResult / (int) currExpr.eval(memory);
         } else if (currOp == Symbol.MOD) {
-          leftResult = leftResult % currExpr.eval(memory);
+          leftResult = (int) leftResult % (int) currExpr.eval(memory);
         } else if (currOp == Symbol.GREATER) {
-          leftResult = leftResult > currExpr.eval(memory) ? 1 : 0;
+          if (leftResult instanceof Boolean) {
+            int oper1 = (boolean) leftResult ? 1 : 0;
+            int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
+
+            leftResult = oper1 > oper2 ? true : false;
+          } else {
+            leftResult = (int) leftResult > (int) currExpr.eval(memory) ? 1 : 0;
+          }
         } else if (currOp == Symbol.GREATER_E) {
-          leftResult = leftResult >= currExpr.eval(memory) ? 1 : 0;
+          if (leftResult instanceof Boolean) {
+            int oper1 = (boolean) leftResult ? 1 : 0;
+            int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
+
+            leftResult = oper1 >= oper2 ? true : false;
+          } else {
+            leftResult = (int) leftResult >= (int) currExpr.eval(memory) ? 1 : 0;
+          }
         } else if (currOp == Symbol.LESS) {
-          leftResult = leftResult < currExpr.eval(memory) ? 1 : 0;
+          if (leftResult instanceof Boolean) {
+            int oper1 = (boolean) leftResult ? 1 : 0;
+            int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
+
+            leftResult = oper1 < oper2 ? true : false;
+          } else {
+            leftResult = (int) leftResult < (int) currExpr.eval(memory) ? 1 : 0;
+          }
         } else if (currOp == Symbol.LESS_E) {
-          leftResult = leftResult <= currExpr.eval(memory) ? 1 : 0;
+          if (leftResult instanceof Boolean) {
+            int oper1 = (boolean) leftResult ? 1 : 0;
+            int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
+
+            leftResult = oper1 <= oper2 ? true : false;
+          } else {
+            leftResult = (int) leftResult <= (int) currExpr.eval(memory) ? 1 : 0;
+          }
         } else if (currOp == Symbol.DIFF) {
-          leftResult = leftResult != currExpr.eval(memory) ? 1 : 0;
+          if (leftResult instanceof Boolean) {
+            int oper1 = (boolean) leftResult ? 1 : 0;
+            int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
+
+            leftResult = oper1 != oper2 ? true : false;
+          } else {
+            leftResult = (int) leftResult != (int) currExpr.eval(memory) ? 1 : 0;
+          }
         } else if (currOp == Symbol.EQUAL) {
-          leftResult = leftResult == currExpr.eval(memory) ? 1 : 0;
+          if (leftResult instanceof Boolean) {
+            int oper1 = (boolean) leftResult ? 1 : 0;
+            int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
+
+            leftResult = oper1 == oper2 ? true : false;
+          } else {
+            leftResult = (int) leftResult == (int) currExpr.eval(memory) ? 1 : 0;
+          }
         } else if (currOp == Symbol.AND) {
-          leftResult = leftResult != 0 && currExpr.eval(memory) != 0 ? 1 : 0;
+          if (leftResult instanceof Boolean) {
+            boolean oper1 = (boolean) leftResult;
+            boolean oper2 = (boolean) currExpr.eval(memory);
+
+            leftResult = oper1 && oper2 ? true : false;
+          } else {
+            leftResult = (int) leftResult != 0 && (int) currExpr.eval(memory) != 0 ? 1 : 0;
+          }
         } else if (currOp == Symbol.OR) {
-          leftResult = leftResult != 0 || currExpr.eval(memory) != 0 ? 1 : 0;
+          if (leftResult instanceof Boolean) {
+            boolean oper1 = (boolean) leftResult;
+            boolean oper2 = (boolean) currExpr.eval(memory);
+
+            leftResult = oper1 || oper2 ? true : false;
+          } else {
+            leftResult = (int) leftResult != 0 || (int) currExpr.eval(memory) != 0 ? 1 : 0;
+          }
         } else {
           throw new RuntimeException("Error: cannot run composite evaluation");
         }
@@ -88,4 +144,15 @@ public class CompositeExpr extends Expr {
     System.out.print(")");
   }
 
+  public Type getType() {
+    Symbol firstOp = op.get(0);
+
+    if (firstOp == Symbol.AND || firstOp == Symbol.OR || firstOp == Symbol.NOT || firstOp == Symbol.LESS
+        || firstOp == Symbol.LESS_E || firstOp == Symbol.GREATER || firstOp == Symbol.GREATER_E
+        || firstOp == Symbol.EQUAL || firstOp == Symbol.DIFF) {
+      return Type.booleanType;
+    } else {
+      return Type.integerType;
+    }
+  }
 }

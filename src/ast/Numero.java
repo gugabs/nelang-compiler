@@ -10,8 +10,12 @@ public class Numero extends Expr {
     this.number = number;
   }
 
+  public int getValue() {
+    return number;
+  }
+
   @Override
-  public int eval(Map<String, Integer> memory) {
+  public Object eval(Map<String, Object> memory) {
     return this.number;
   }
 
@@ -19,4 +23,9 @@ public class Numero extends Expr {
   public void genC() {
     System.out.print(number);
   }
+
+  public Type getType() {
+    return Type.integerType;
+  }
+
 }

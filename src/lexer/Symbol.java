@@ -39,7 +39,10 @@ public enum Symbol {
 	  SEMICOLON(";"),
 	  RANGE(".."),
 	  READ("read"),
-	  WRITE("write");
+	  WRITE("write"),
+	  TRUE("true"),
+    FALSE("false"),
+    QUOTATION_M("\"");
 
 	  Symbol(String name) {
 	    this.name = name;

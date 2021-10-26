@@ -14,16 +14,16 @@ public class UnaryExpr extends Expr {
   }
 
   @Override
-  public int eval(Map<String, Integer> memory) {
+  public Object eval(Map<String, Object> memory) {
     int eval = 0;
 
     if (op == Symbol.NOT) {
-      eval = expr.eval(memory); // Não poderia ser !expr.eval(memory)
+      eval = (int) expr.eval(memory);
       eval = eval == 0 ? 1 : 0;
     } else if (op == Symbol.PLUS) {
-      eval = +expr.eval(memory);
+      eval = +(int) expr.eval(memory);
     } else if (op == Symbol.MINUS) {
-      eval = -expr.eval(memory);
+      eval = -(int) expr.eval(memory);
     } else {
       throw new RuntimeException("Error: cannot run unary expression");
     }
@@ -35,6 +35,10 @@ public class UnaryExpr extends Expr {
   public void genC() {
     System.out.print(this.op);
     expr.genC();
+  }
+
+  public Type getType() {
+    return expr.getType();
   }
 
 }

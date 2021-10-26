@@ -14,8 +14,8 @@ public class WhileStat extends Stat {
   }
 
   @Override
-  public void eval(Map<String, Integer> memory) {
-    while (left.eval(memory) != 0)
+  public void eval(Map<String, Object> memory) {
+    while ((int) left.eval(memory) != 0)
       statList.eval(memory);
   }
 

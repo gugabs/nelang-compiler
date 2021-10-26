@@ -5,23 +5,34 @@ import java.util.Map;
 public class Ident extends Expr {
 
   private String name;
+  private Type type;
 
   public Ident(String name) {
-    super();
     this.name = name;
   }
 
-  @Override
-  public int eval(Map<String, Integer> memory) {
+  public Ident(String name, Type type) {
+    this.name = name;
+    this.type = type;
+  }
+
+  public Object eval(Map<String, Object> memory) {
     return memory.get(this.name);
   }
 
-  @Override
   public void genC() {
     System.out.print(name);
   }
 
   public String getName() {
     return name;
+  }
+
+  public Type getType() {
+    return type;
+  }
+
+  public void setType(Type type) {
+    this.type = type;
   }
 }

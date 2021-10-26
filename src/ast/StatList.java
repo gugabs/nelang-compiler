@@ -13,7 +13,7 @@ public class StatList extends Stat {
   }
 
   @Override
-  public void eval(Map<String, Integer> memory) {
+  public void eval(Map<String, Object> memory) {
     listStat.forEach(stat -> {
       stat.eval(memory);
     });

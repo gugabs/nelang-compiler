@@ -22,8 +22,10 @@ public class IfStat extends Stat {
   }
 
   @Override
-  public void eval(Map<String, Integer> memory) {
-    if (left.eval(memory) != 0)
+  public void eval(Map<String, Object> memory) {
+    int leftEval = (boolean) left.eval(memory) ? 1 : 0;
+
+    if (leftEval != 0)
       statList.eval(memory);
     else if (statElse != null)
       statElse.eval(memory);

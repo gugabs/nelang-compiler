@@ -16,20 +16,20 @@ public class Main {
 
     Compiler compiler = new Compiler(expr);
     Program ast = compiler.compile();
-    Map<String, Integer> memory = new HashMap<>();
+    Map<String, Object> memory = new HashMap<>();
 
     if (args.length == 0)
       throw new RuntimeException("Error: input length is zero");
     switch (args[0]) {
-      case "-gen" -> {
-        ast.genC();
-      }
-      case "-run" -> {
-        ast.eval(memory);
-      }
-      default -> {
-        throw new RuntimeException("Error: cannot read input arguments");
-      }
+    case "-gen" -> {
+      ast.genC();
+    }
+    case "-run" -> {
+      ast.eval(memory);
+    }
+    default -> {
+      throw new RuntimeException("Error: cannot read input arguments");
+    }
     }
   }
 
