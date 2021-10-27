@@ -23,7 +23,12 @@ public class IfStat extends Stat {
 
   @Override
   public void eval(Map<String, Object> memory) {
-    int leftEval = (boolean) left.eval(memory) ? 1 : 0;
+    int leftEval;
+
+    if (left.eval(memory) instanceof Boolean)
+      leftEval = (boolean) left.eval(memory) ? 1 : 0;
+    else
+      leftEval = (int) left.eval(memory);
 
     if (leftEval != 0)
       statList.eval(memory);

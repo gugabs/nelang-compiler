@@ -16,7 +16,7 @@ public class Program {
 
   public void genC() {
 
-    System.out.println("#include <stdio.h>");
+    System.out.println("#include <stdio.h>\n#include <string.h>");
     System.out.println("int main() {");
     statList.genC();
     System.out.println("return 0;\n}");

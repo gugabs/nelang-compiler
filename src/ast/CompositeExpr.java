@@ -51,6 +51,11 @@ public class CompositeExpr extends Expr {
             int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
 
             leftResult = oper1 > oper2 ? true : false;
+          } else if (leftResult instanceof String) {
+            String str1 = leftResult.toString();
+            String str2 = currExpr.eval(memory).toString();
+
+            return str1.compareToIgnoreCase(str2) > 0 ? true : false;
           } else {
             leftResult = (int) leftResult > (int) currExpr.eval(memory) ? 1 : 0;
           }
@@ -60,6 +65,11 @@ public class CompositeExpr extends Expr {
             int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
 
             leftResult = oper1 >= oper2 ? true : false;
+          } else if (leftResult instanceof String) {
+            String str1 = leftResult.toString();
+            String str2 = currExpr.eval(memory).toString();
+
+            return str1.compareToIgnoreCase(str2) >= 0 ? true : false;
           } else {
             leftResult = (int) leftResult >= (int) currExpr.eval(memory) ? 1 : 0;
           }
@@ -69,6 +79,11 @@ public class CompositeExpr extends Expr {
             int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
 
             leftResult = oper1 < oper2 ? true : false;
+          } else if (leftResult instanceof String) {
+            String str1 = leftResult.toString();
+            String str2 = currExpr.eval(memory).toString();
+
+            return str1.compareToIgnoreCase(str2) < 0 ? true : false;
           } else {
             leftResult = (int) leftResult < (int) currExpr.eval(memory) ? 1 : 0;
           }
@@ -78,6 +93,11 @@ public class CompositeExpr extends Expr {
             int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
 
             leftResult = oper1 <= oper2 ? true : false;
+          } else if (leftResult instanceof String) {
+            String str1 = leftResult.toString();
+            String str2 = currExpr.eval(memory).toString();
+
+            return str1.compareToIgnoreCase(str2) <= 0 ? true : false;
           } else {
             leftResult = (int) leftResult <= (int) currExpr.eval(memory) ? 1 : 0;
           }
@@ -87,6 +107,8 @@ public class CompositeExpr extends Expr {
             int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
 
             leftResult = oper1 != oper2 ? true : false;
+          } else if (leftResult instanceof String) {
+            leftResult = leftResult.equals(currExpr.eval(memory)) ? false : true;
           } else {
             leftResult = (int) leftResult != (int) currExpr.eval(memory) ? 1 : 0;
           }
@@ -96,6 +118,8 @@ public class CompositeExpr extends Expr {
             int oper2 = (boolean) currExpr.eval(memory) ? 1 : 0;
 
             leftResult = oper1 == oper2 ? true : false;
+          } else if (leftResult instanceof String) {
+            leftResult = leftResult.equals(currExpr.eval(memory)) ? true : false;
           } else {
             leftResult = (int) leftResult == (int) currExpr.eval(memory) ? 1 : 0;
           }
@@ -105,6 +129,8 @@ public class CompositeExpr extends Expr {
             boolean oper2 = (boolean) currExpr.eval(memory);
 
             leftResult = oper1 && oper2 ? true : false;
+          } else if (currExpr.eval(memory) instanceof Boolean) {
+            leftResult = (int) leftResult != 0 && (boolean) currExpr.eval(memory) != false ? true : false;
           } else {
             leftResult = (int) leftResult != 0 && (int) currExpr.eval(memory) != 0 ? 1 : 0;
           }
@@ -117,6 +143,8 @@ public class CompositeExpr extends Expr {
           } else {
             leftResult = (int) leftResult != 0 || (int) currExpr.eval(memory) != 0 ? 1 : 0;
           }
+        } else if (currOp == Symbol.CONCAT) {
+          leftResult += currExpr.eval(memory).toString();
         } else {
           throw new RuntimeException("Error: cannot run composite evaluation");
         }
@@ -151,6 +179,8 @@ public class CompositeExpr extends Expr {
         || firstOp == Symbol.LESS_E || firstOp == Symbol.GREATER || firstOp == Symbol.GREATER_E
         || firstOp == Symbol.EQUAL || firstOp == Symbol.DIFF) {
       return Type.booleanType;
+    } else if (firstOp == Symbol.CONCAT) {
+      return Type.stringType;
     } else {
       return Type.integerType;
     }

@@ -42,7 +42,8 @@ public enum Symbol {
 	  WRITE("write"),
 	  TRUE("true"),
     FALSE("false"),
-    QUOTATION_M("\"");
+    QUOTATION_M("\""),
+    CONCAT("++");
 
 	  Symbol(String name) {
 	    this.name = name;

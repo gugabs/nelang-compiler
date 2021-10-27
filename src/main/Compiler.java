@@ -121,16 +121,6 @@ public class Compiler {
   }
 
   private void nextToken() {
-    if (this.tokenPos < this.input.length - 1 && input[tokenPos] == '/' && input[tokenPos + 1] == '/') {
-      while (this.tokenPos < this.input.length - 1 && input[tokenPos] != '\0' && input[tokenPos] != '\n')
-        tokenPos++;
-      nextToken();
-    } else if (this.tokenPos < this.input.length - 1 && input[tokenPos] == '/' && input[tokenPos + 1] == '*') {
-      while (this.tokenPos < this.input.length - 1 && input[tokenPos] != '*' && input[tokenPos + 1] != '/')
-        tokenPos++;
-      nextToken();
-    }
-
     while (this.tokenPos < this.input.length && (this.input[this.tokenPos] == ' ' || this.input[this.tokenPos] == '\r'
         || this.input[this.tokenPos] == '\n' || this.input[this.tokenPos] == '\t'))
       this.tokenPos++;
@@ -149,7 +139,12 @@ public class Compiler {
     } else {
       switch (currCharacter) {
       case '+':
-        token = Symbol.PLUS;
+        if (input[tokenPos] == '+' && input[tokenPos + 1] == '+') {
+          token = Symbol.CONCAT;
+          tokenPos++;
+        } else {
+          token = Symbol.PLUS;
+        }
         break;
 
       case '-':
@@ -161,7 +156,27 @@ public class Compiler {
         break;
 
       case '/':
-        token = Symbol.DIV;
+        if (input[tokenPos] == '/' && input[tokenPos + 1] == '/') {
+
+          while (tokenPos < input.length && input[tokenPos] != '\0' && input[tokenPos] != '\n')
+            tokenPos++;
+
+          nextToken();
+          tokenPos--;
+
+        } else if (input[tokenPos] == '/' && input[tokenPos + 1] == '*') {
+
+          tokenPos += 2;
+
+          while (tokenPos + 1 < input.length && input[tokenPos] != '*' && input[tokenPos + 1] != '/')
+            tokenPos++;
+
+          tokenPos += 2;
+
+          nextToken();
+        } else {
+          token = Symbol.DIV;
+        }
         break;
 
       case '%':
@@ -474,6 +489,25 @@ public class Compiler {
   }
 
   private Expr expr() {
+    Expr left = this.orExpr();
+
+    List<Symbol> opList = new ArrayList<Symbol>();
+    List<Expr> rightList = new ArrayList<Expr>();
+
+    if (this.token == Symbol.CONCAT) {
+      while (token == Symbol.CONCAT) {
+        opList.add(token);
+        nextToken();
+        Expr right = this.orExpr();
+        rightList.add(right);
+      }
+      left = new CompositeExpr(left, opList, rightList);
+    }
+
+    return left;
+  }
+
+  private Expr orExpr() {
     Expr left = this.andExpr();
 
     List<Symbol> opList = new ArrayList<Symbol>();
@@ -631,11 +665,13 @@ public class Compiler {
     } else if (this.token == Symbol.QUOTATION_M) {
       StringBuffer value = new StringBuffer();
 
-      while (tokenPos < this.input.length && Character.isLetter(this.input[this.tokenPos])
-          || Character.isDigit(this.input[tokenPos])) {
+      while (tokenPos + 1 < this.input.length && input[tokenPos + 1] != '"') {
         value.append(this.input[tokenPos]);
         this.tokenPos++;
       }
+      
+      value.append(this.input[tokenPos]);
+      this.tokenPos++;
 
       this.nextToken();
 

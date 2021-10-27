@@ -15,11 +15,15 @@ public class UnaryExpr extends Expr {
 
   @Override
   public Object eval(Map<String, Object> memory) {
-    int eval = 0;
+    Object eval = 0;
 
     if (op == Symbol.NOT) {
-      eval = (int) expr.eval(memory);
-      eval = eval == 0 ? 1 : 0;
+      if (expr.eval(memory) instanceof Boolean) {
+        eval = !(boolean) expr.eval(memory);
+      } else {
+        eval = (int) expr.eval(memory);
+        eval = (int) eval == 0 ? 1 : 0; 
+      }
     } else if (op == Symbol.PLUS) {
       eval = +(int) expr.eval(memory);
     } else if (op == Symbol.MINUS) {

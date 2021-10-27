@@ -41,6 +41,7 @@ public class Main {
       Scanner reader = new Scanner(programInput);
       while (reader.hasNextLine()) {
         String data = reader.nextLine();
+        data += "\n";
         input.append(data);
       }
       reader.close();
