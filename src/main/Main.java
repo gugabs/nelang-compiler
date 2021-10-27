@@ -1,8 +1,5 @@
 package main;
 
-import java.util.Map;
-import java.util.HashMap;
-
 import java.io.File;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
@@ -16,7 +13,6 @@ public class Main {
 
     Compiler compiler = new Compiler(expr);
     Program ast = compiler.compile();
-    Map<String, Object> memory = new HashMap<>();
 
     if (args.length == 0)
       throw new RuntimeException("Error: input length is zero");
@@ -25,7 +21,7 @@ public class Main {
       ast.genC();
     }
     case "-run" -> {
-      ast.eval(memory);
+      ast.run();
     }
     default -> {
       throw new RuntimeException("Error: cannot read input arguments");
