@@ -6,6 +6,6 @@ public class StringType extends Type {
   }
 
   public String genC() {
-    return "string";
+    return "char";
   }
 }

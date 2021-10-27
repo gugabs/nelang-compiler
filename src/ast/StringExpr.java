@@ -12,7 +12,7 @@ public class StringExpr extends Expr {
 
   @Override
   public void genC() {
-    System.out.print("'" + value + "'");
+    System.out.print("\"" + value + "\"");
   }
 
   public String getValue() {

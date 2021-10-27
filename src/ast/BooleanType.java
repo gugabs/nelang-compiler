@@ -6,6 +6,6 @@ public class BooleanType extends Type {
   }
   
   public String genC() {
-    return "boolean";
+    return "bool";
   }
 }

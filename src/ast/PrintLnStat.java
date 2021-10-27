@@ -18,7 +18,14 @@ public class PrintLnStat extends Stat {
 
   @Override
   public void genC() {
-    System.out.print("printf(\"%d\\n\", ");
+    String typeSpecifier;
+    
+    if (this.expr.getType() == Type.integerType || this.expr.getType() == Type.booleanType)
+      typeSpecifier = "%d";
+    else
+      typeSpecifier = "%s";
+    
+    System.out.print("printf(\"" + typeSpecifier + "\\n\", ");
     expr.genC();
     System.out.println(");");
   }

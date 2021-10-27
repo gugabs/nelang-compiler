@@ -2,7 +2,7 @@ package ast;
 
 public class IntegerType extends Type {
   public IntegerType() {
-    super("int");
+    super("integer");
   }
 
   public String genC() {

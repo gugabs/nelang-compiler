@@ -22,9 +22,15 @@ public class AssignStat extends Stat {
 
   @Override
   public void genC() {
-    id.genC();
-    System.out.print(" = ");
-    expr.genC();
-    System.out.println("; ");
+    if (id.getType() == Type.stringType) {
+      System.out.print("strcpy(" + id.getName() + ", ");
+      expr.genC();
+      System.out.println(");");
+    } else {
+      id.genC();
+      System.out.print(" = ");
+      expr.genC();
+      System.out.println("; ");
+    }
   }
 }

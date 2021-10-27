@@ -10,7 +10,7 @@ public class BooleanExpr extends Expr {
 
   @Override
   public void genC() {
-    System.out.print(value ? "1" : "0");
+    System.out.print(value ? "true" : "false");
   }
 
   @Override

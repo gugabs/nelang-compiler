@@ -157,19 +157,124 @@ public class CompositeExpr extends Expr {
 
   @Override
   public void genC() {
-    System.out.print("(");
-    left.genC();
-    if (op != null) {
+    if (op == null) {
+      left.genC();
+    } else {
       Iterator<Symbol> opIterator = op.iterator();
       Iterator<Expr> exprIterator = right.iterator();
-      while (exprIterator.hasNext()) {
-        System.out.print(" ");
-        opIterator.next().genC();
-        System.out.print(" ");
-        exprIterator.next().genC();
+
+      Symbol currOper = opIterator.next();
+
+      if (currOper != Symbol.CONCAT) {
+        if (left.getType() == Type.stringType) {
+          Expr currExpr = exprIterator.next();
+
+          if (currOper == Symbol.LESS) {
+            System.out.print("strcmp(");
+            left.genC();
+            System.out.print(", ");
+            currExpr.genC();
+            System.out.print(") < 0");
+          } else if (currOper == Symbol.LESS_E) {
+            System.out.print("strcmp(");
+            left.genC();
+            System.out.print(", ");
+            currExpr.genC();
+            System.out.print(") <= 0");
+          } else if (currOper == Symbol.GREATER) {
+            System.out.print("strcmp(");
+            left.genC();
+            System.out.print(", ");
+            currExpr.genC();
+            System.out.print(") > 0");
+          } else if (currOper == Symbol.GREATER_E) {
+            System.out.print("strcmp(");
+            left.genC();
+            System.out.print(", ");
+            currExpr.genC();
+            System.out.print(") >= 0");
+          } else if (currOper == Symbol.EQUAL) {
+            System.out.print("strcmp(");
+            left.genC();
+            System.out.print(", ");
+            currExpr.genC();
+            System.out.print(") == 0");
+          } else if (currOper == Symbol.DIFF) {
+            System.out.print("strcmp(");
+            left.genC();
+            System.out.print(", ");
+            currExpr.genC();
+            System.out.print(") != 0");
+          }
+        } else {
+          left.genC();
+        }
+      } else {
+        System.out.print("strcat(");
+
+        if (left.getType() == Type.integerType)
+          System.out.print("int2string(");
+        else if (left.getType() == Type.booleanType)
+          System.out.print("bool2string(");
+        else
+          System.out.print("confirmString(");
+
+        left.genC();
+
+        System.out.print(")");
+        System.out.print(',');
+      }
+
+      if (currOper == Symbol.CONCAT) {
+        while (opIterator.hasNext() && currOper == Symbol.CONCAT) {
+          System.out.print("strcat(");
+
+          if (exprIterator.hasNext()) {
+
+            Expr currExpr = exprIterator.next();
+
+            if (currExpr.getType() == Type.integerType)
+              System.out.print("int2string(");
+            else if (currExpr.getType() == Type.booleanType)
+              System.out.print("bool2string(");
+            else
+              System.out.print("confirmString(");
+
+            currExpr.genC();
+
+            System.out.print(")");
+            System.out.print(',');
+          }
+
+          currOper = opIterator.next();
+        }
+
+        Expr currExpr = exprIterator.next();
+
+        if (currExpr.getType() == Type.integerType)
+          System.out.print("int2string(");
+        else if (currExpr.getType() == Type.booleanType)
+          System.out.print("bool2string(");
+        else
+          System.out.print("confirmString(");
+
+        currExpr.genC();
+
+        System.out.print(")");
+        System.out.print(")");
+      } else {
+        while (exprIterator.hasNext()) {
+          System.out.print(" ");
+          currOper.genC();
+          System.out.print(" ");
+          exprIterator.next().genC();
+
+          if (opIterator.hasNext())
+            currOper = opIterator.next();
+        }
       }
     }
-    System.out.print(")");
+
   }
 
   public Type getType() {

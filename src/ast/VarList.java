@@ -16,8 +16,10 @@ public class VarList extends Stat {
   }
 
   public void genC() {
-    System.out.print(id.getType().getName() + ' ');
+    String size = id.getType() == Type.stringType ? "[255]" : " ";
+    
+    System.out.print(id.getType().genC() + " ");
     id.genC();
-    System.out.println(';');
+    System.out.println(size + ';');
   }
 }
