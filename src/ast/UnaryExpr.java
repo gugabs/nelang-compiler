@@ -37,7 +37,7 @@ public class UnaryExpr extends Expr {
 
   @Override
   public void genC() {
-    System.out.print(this.op);
+    System.out.print(this.op + " ");
     expr.genC();
   }
 

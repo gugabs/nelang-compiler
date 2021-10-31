@@ -210,28 +210,34 @@ public class CompositeExpr extends Expr {
           left.genC();
         }
       } else {
-        System.out.print("strcat(");
 
-        if (left.getType() == Type.integerType)
-          System.out.print("int2string(");
-        else if (left.getType() == Type.booleanType)
-          System.out.print("bool2string(");
-        else
-          System.out.print("confirmString(");
+        if (left instanceof CompositeExpr)
+          left.genC();
+        else {
+          System.out.println("strcpy(buffer, \"\\0\");");
+          System.out.print("strcat(buffer, ");
+          
+          if (left.getType() == Type.integerType)
+            System.out.print("int2string(");
+          else if (left.getType() == Type.booleanType)
+            System.out.print("bool2string(");
+          else
+            System.out.print("confirmString(");
 
-        left.genC();
+          left.genC();
 
-        System.out.print(")");
-        System.out.print(',');
+          System.out.print(")");
+          System.out.println(");");
+        }
       }
 
       if (currOper == Symbol.CONCAT) {
         while (opIterator.hasNext() && currOper == Symbol.CONCAT) {
-          System.out.print("strcat(");
-
           if (exprIterator.hasNext()) {
 
             Expr currExpr = exprIterator.next();
+
+            System.out.print("strcat(buffer, ");
 
             if (currExpr.getType() == Type.integerType)
               System.out.print("int2string(");
@@ -243,13 +249,15 @@ public class CompositeExpr extends Expr {
             currExpr.genC();
 
             System.out.print(")");
-            System.out.print(',');
+            System.out.println(");");
           }
 
           currOper = opIterator.next();
         }
 
         Expr currExpr = exprIterator.next();
+
+        System.out.print("strcat(buffer, ");
 
         if (currExpr.getType() == Type.integerType)
           System.out.print("int2string(");
@@ -261,7 +269,7 @@ public class CompositeExpr extends Expr {
         currExpr.genC();
 
         System.out.print(")");
-        System.out.print(")");
+        System.out.println(");");
       } else {
         while (exprIterator.hasNext()) {
           System.out.print(" ");

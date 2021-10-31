@@ -19,15 +19,24 @@ public class PrintLnStat extends Stat {
   @Override
   public void genC() {
     String typeSpecifier;
-    
-    if (this.expr.getType() == Type.integerType || this.expr.getType() == Type.booleanType)
+
+    if (this.expr.getType() == Type.integerType || this.expr.getType() == Type.booleanType) {
       typeSpecifier = "%d";
-    else
-      typeSpecifier = "%s";
-    
-    System.out.print("printf(\"" + typeSpecifier + "\\n\", ");
-    expr.genC();
-    System.out.println(");");
+
+      System.out.print("printf(\"" + typeSpecifier + "\\n\", ");
+      expr.genC();
+      System.out.println(");");
+    } else {
+      if (expr instanceof StringExpr) {
+        System.out.print("printf(");
+        expr.genC();
+        System.out.println(");");
+      } else {
+        expr.genC();
+        typeSpecifier = "%s";
+        System.out.println("printf(\"" + typeSpecifier + "\\n\", buffer);"); 
+      }
+    }
   }
 
 }
